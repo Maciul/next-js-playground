@@ -8,11 +8,9 @@ import { redirect } from 'next/navigation';
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
-    invalid_type_error: 'Please select a customer'
+    invalid_type_error: 'Please select a customer',
   }),
-  amount: z.coerce
-  .number()
-  .gt(0, {message: 'Please enter an amount greater than $0.'}),
+  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
   status: z.enum(['pending', 'paid'], {
     invalid_type_error: 'Please select an invoice status.',
   }),
@@ -38,7 +36,7 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
     };
   }
 
-  const {amount, customerId, status} = validatedFields.data
+  const { amount, customerId, status } = validatedFields.data;
   const amountInCents = amount * 100;
 
   try {
@@ -72,8 +70,6 @@ export async function createInvoice(prevState: State, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error)
-    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
