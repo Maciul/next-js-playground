@@ -1,5 +1,7 @@
 'use server';
 
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { sql } from '@vercel/postgres';
@@ -21,6 +23,24 @@ const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 // ...
+
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+  try {
+    console.log('await signIn');
+    await signIn('credentials', formData);
+  } catch (error) {
+    console.log('error', error.type);
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}
 
 export async function updateInvoice(id: string, prevState: State, formData: FormData) {
   const validatedFields = UpdateInvoice.safeParse({
