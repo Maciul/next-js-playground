@@ -26,10 +26,8 @@ const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
-    console.log('await signIn');
     await signIn('credentials', formData);
   } catch (error) {
-    console.log('error', error.type);
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
